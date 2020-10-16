@@ -30,7 +30,7 @@ export default class ApexCharts {
 
     this.w.globals.cuid = Utils.randomId()
     this.w.globals.chartID = this.w.config.chart.id
-      ? this.w.config.chart.id
+      ? Utils.escapeString(this.w.config.chart.id)
       : this.w.globals.cuid
 
     const initCtx = new InitCtxVariables(this)
@@ -117,6 +117,11 @@ export default class ApexCharts {
     }
 
     this.core.setupElements()
+
+    if (w.config.chart.type === 'treemap') {
+      w.config.grid.show = false
+      w.config.yaxis[0].show = false
+    }
 
     if (gl.svgWidth === 0) {
       // if the element is hidden, skip drawing
@@ -224,7 +229,9 @@ export default class ApexCharts {
       } else if (graphData === null || w.globals.allSeriesCollapsed) {
         me.series.handleNoData()
       }
-      me.axes.drawAxis(w.config.chart.type, graphData.xyRatios)
+      if (w.config.chart.type !== 'treemap') {
+        me.axes.drawAxis(w.config.chart.type, graphData.xyRatios)
+      }
 
       me.grid = new Grid(me)
       let elgrid = me.grid.drawGrid()
@@ -340,12 +347,12 @@ export default class ApexCharts {
     const chartID = this.w.config.chart.id
     if (chartID) {
       Apex._chartInstances.forEach((c, i) => {
-        if (c.id === chartID) {
+        if (c.id === Utils.escapeString(chartID)) {
           Apex._chartInstances.splice(i, 1)
         }
       })
     }
-    new Destroy(this.ctx).clear()
+    new Destroy(this.ctx).clear({ isUpdating: false })
   }
 
   /**
@@ -461,13 +468,12 @@ export default class ApexCharts {
       me.w.globals.initialSeries = Utils.clone(me.w.config.series)
     }
 
-    // call update with existing series to set the series forcefully avoiding reset on resize
-    return this.update({ series: this.w.config.series })
+    return this.update()
   }
 
   update(options) {
     return new Promise((resolve, reject) => {
-      new Destroy(this.ctx).clear()
+      new Destroy(this.ctx).clear({ isUpdating: true })
 
       const graphData = this.create(this.w.config.series, options)
       if (!graphData) return resolve(this)
@@ -517,8 +523,9 @@ export default class ApexCharts {
       .map((ch) => (this.w.config.chart.group === ch.group ? ch.chart : this))
   }
 
-  static getChartByID(chartID) {
-    const c = Apex._chartInstances.filter((ch) => ch.id === chartID)[0]
+  static getChartByID(id) {
+    const chartId = Utils.escapeString(id)
+    const c = Apex._chartInstances.filter((ch) => ch.id === chartId)[0]
     return c && c.chart
   }
 
@@ -703,8 +710,7 @@ export default class ApexCharts {
       this.w.globals.dataChanged = false
 
       // we need to redraw the whole chart on window resize (with a small delay).
-      // call update with existing series to set the series forcefully avoiding reset on resize
-      this.ctx.update({ series: this.w.config.series })
+      this.ctx.update()
     }, 150)
   }
 }

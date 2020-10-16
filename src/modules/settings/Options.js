@@ -279,8 +279,10 @@ export default class Options {
           dataPointMouseEnter: undefined,
           dataPointMouseLeave: undefined,
           beforeZoom: undefined,
+          beforeResetZoom: undefined,
           zoomed: undefined,
-          scrolled: undefined
+          scrolled: undefined,
+          brushScrolled: undefined
         },
         foreColor: '#373d3f',
         fontFamily: 'Helvetica, Arial, sans-serif',
@@ -382,6 +384,7 @@ export default class Options {
           startingShape: 'flat',
           endingShape: 'flat',
           rangeBarOverlap: true,
+          rangeBarGroupRows: false,
           colors: {
             ranges: [],
             backgroundBarColors: [],
@@ -415,6 +418,19 @@ export default class Options {
           shadeIntensity: 0.5,
           reverseNegativeShade: false,
           distributed: false,
+          useFillColorAsStroke: false,
+          colorScale: {
+            inverse: false,
+            ranges: [],
+            min: undefined,
+            max: undefined
+          }
+        },
+        treemap: {
+          enableShades: true,
+          shadeIntensity: 0.5,
+          distributed: false,
+          reverseNegativeShade: false,
           useFillColorAsStroke: false,
           colorScale: {
             inverse: false,
@@ -776,14 +792,14 @@ export default class Options {
         hover: {
           filter: {
             type: 'lighten',
-            value: 0.15
+            value: 0.1
           }
         },
         active: {
           allowMultipleDataPointsSelection: false,
           filter: {
             type: 'darken',
-            value: 0.65
+            value: 0.5
           }
         }
       },

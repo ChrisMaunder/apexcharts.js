@@ -11,6 +11,7 @@ import Radial from '../charts/Radial'
 import RangeBar from '../charts/RangeBar'
 import Legend from './legend/Legend'
 import Line from '../charts/Line'
+import Treemap from '../charts/Treemap'
 import Graphics from './Graphics'
 import Range from './Range'
 import Utils from '../utils/Utils'
@@ -48,7 +49,8 @@ export default class Core {
       'scatter',
       'bubble',
       'radar',
-      'heatmap'
+      'heatmap',
+      'treemap'
     ]
 
     let xyChartsArrTypes = [
@@ -69,7 +71,7 @@ export default class Core {
       (cnf.chart.type === 'bar' || cnf.chart.type === 'rangeBar') &&
       cnf.plotOptions.bar.horizontal
 
-    gl.chartClass = '.apexcharts' + gl.cuid
+    gl.chartClass = '.apexcharts' + gl.chartID
 
     gl.dom.baseEl = this.el
 
@@ -186,7 +188,7 @@ export default class Core {
     let candlestick = new CandleStick(this.ctx, xyRatios)
     this.ctx.pie = new Pie(this.ctx)
     let radialBar = new Radial(this.ctx)
-    let rangeBar = new RangeBar(this.ctx, xyRatios)
+    this.ctx.rangeBar = new RangeBar(this.ctx, xyRatios)
     let radar = new Radar(this.ctx)
     let elGraph = []
 
@@ -245,11 +247,15 @@ export default class Core {
           elGraph = candleStick.draw(gl.series)
           break
         case 'rangeBar':
-          elGraph = rangeBar.draw(gl.series)
+          elGraph = this.ctx.rangeBar.draw(gl.series)
           break
         case 'heatmap':
           let heatmap = new HeatMap(this.ctx, xyRatios)
           elGraph = heatmap.draw(gl.series)
+          break
+        case 'treemap':
+          let treemap = new Treemap(this.ctx, xyRatios)
+          elGraph = treemap.draw(gl.series)
           break
         case 'pie':
         case 'donut':

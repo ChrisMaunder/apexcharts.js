@@ -132,6 +132,7 @@ class Legend {
 
       mStyle.background = fillcolor[i]
       mStyle.color = fillcolor[i]
+      mStyle.setProperty('background', fillcolor[i], 'important')
 
       // override fill color with custom legend.markers.fillColors
       if (
@@ -258,6 +259,7 @@ class Legend {
 
       Graphics.setAttrs(elLegend, {
         rel: i + 1,
+        seriesName: Utils.escapeString(legendNames[i]),
         'data:collapsed': collapsedSeries || ancillaryCollapsedSeries
       })
 
@@ -272,7 +274,9 @@ class Legend {
 
     // for now - just prevent click on heatmap legend - and allow hover only
     const clickAllowed =
-      w.config.chart.type !== 'heatmap' && !this.isBarsDistributed
+      w.config.chart.type !== 'treemap' &&
+      w.config.chart.type !== 'heatmap' &&
+      !this.isBarsDistributed
 
     if (clickAllowed && w.config.legend.onItemClick.toggleDataSeries) {
       w.globals.dom.elWrap.addEventListener('click', self.onLegendClick, true)

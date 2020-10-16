@@ -102,6 +102,7 @@ type ApexChart = {
     | 'radar'
     | 'polarArea'
     | 'rangeBar'
+    | 'treemap'
   foreColor?: string
   fontFamily?: string
   background?: string
@@ -125,8 +126,10 @@ type ApexChart = {
     dataPointMouseEnter?(e: any, chart?: any, options?: any): void
     dataPointMouseLeave?(e: any, chart?: any, options?: any): void
     beforeZoom?(chart: any, options?: any): void
+    beforeResetZoom?(chart: any, options?: any): void
     zoomed?(chart: any, options?: any): void
     scrolled?(chart: any, options?: any): void
+    brushScrolled?(chart: any, options?: any): void
   }
   brush?: {
     enabled?: boolean
@@ -286,6 +289,7 @@ type ApexTitleSubtitle = {
 type ApexAxisChartSeries = {
   name?: string
   type?: string
+  color?: string
   data:
     | (number | null)[]
     | { x: any; y: any, fillColor?: string, strokeColor?: string }[]
@@ -465,6 +469,7 @@ type ApexPlotOptions = {
     barHeight?: string
     distributed?: boolean
     rangeBarOverlap?: boolean
+    rangeBarGroupRows?: boolean
     colors?: {
       ranges?: {
         from?: number
@@ -514,6 +519,25 @@ type ApexPlotOptions = {
       min?: number
       max?: number
     }
+  }
+  treemap?: {
+    enableShades?: boolean
+    shadeIntensity?: number
+    distributed?: boolean
+    reverseNegativeShade?: boolean
+    useFillColorAsStroke?: boolean
+    colorScale?: {
+      inverse?: boolean
+      ranges?: {
+        from?: number
+        to?: number
+        color?: string
+        foreColor?: string
+        name?: string
+      }[];
+      min?: number
+      max?: number
+    };
   }
   pie?: {
     startAngle?: number
@@ -884,7 +908,7 @@ type ApexXAxis = {
     offsetX?: number
     offsetY?: number
     format?: string
-    formatter?(value: string, timestamp?: number): string | string[]
+    formatter?(value: string, timestamp?: number, opts?:any): string | string[]
     datetimeUTC?: boolean
     datetimeFormatter?: {
       year?: string
