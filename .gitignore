@@ -9,3 +9,5 @@ tests/e2e/diffs
 .vscode
 bundle-analysis.html
 package-lock.json
+/.vs/slnx.sqlite
+/.vs
