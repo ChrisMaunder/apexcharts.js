@@ -133,6 +133,7 @@ export default class Tooltip {
     for (let i = 0; i < ttItemsCnt; i++) {
       let gTxt = document.createElement('div')
       gTxt.classList.add('apexcharts-tooltip-series-group')
+      gTxt.style.order = w.config.tooltip.inverseOrder ? ttItemsCnt - i : i + 1
       if (
         this.tConfig.shared &&
         this.tConfig.enabledOnSeries &&
@@ -240,9 +241,9 @@ export default class Tooltip {
         points = w.globals.dom.baseEl.querySelectorAll(
           '.apexcharts-series .apexcharts-bar-area, .apexcharts-series .apexcharts-candlestick-area, .apexcharts-series .apexcharts-rangebar-area'
         )
-      } else if (type === 'heatmap') {
+      } else if (type === 'heatmap' || type === 'treemap') {
         points = w.globals.dom.baseEl.querySelectorAll(
-          '.apexcharts-series .apexcharts-heatmap'
+          '.apexcharts-series .apexcharts-heatmap, .apexcharts-series .apexcharts-treemap'
         )
       }
 
@@ -266,7 +267,11 @@ export default class Tooltip {
       (chartWithmarkers && this.showOnIntersect)
     ) {
       this.addDatapointEventsListeners(seriesHoverParams)
-    } else if (!w.globals.axisCharts || type === 'heatmap') {
+    } else if (
+      !w.globals.axisCharts ||
+      type === 'heatmap' ||
+      type === 'treemap'
+    ) {
       let seriesAll = w.globals.dom.baseEl.querySelectorAll(
         '.apexcharts-series'
       )
@@ -526,12 +531,16 @@ export default class Tooltip {
       if (isStickyTooltip && !this.showOnIntersect) {
         this.handleStickyTooltip(e, clientX, clientY, opt)
       } else {
-        if (w.config.chart.type === 'heatmap') {
-          let markerXY = this.intersect.handleHeatTooltip({
+        if (
+          w.config.chart.type === 'heatmap' ||
+          w.config.chart.type === 'treemap'
+        ) {
+          let markerXY = this.intersect.handleHeatTreeTooltip({
             e,
             opt,
             x,
-            y
+            y,
+            type: w.config.chart.type
           })
           x = markerXY.x
           y = markerXY.y
